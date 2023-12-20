@@ -43,7 +43,7 @@ const exportFtlConfig = (env, argv) => {
     plugins: [
       new HtmlWebpackPlugin({
         title: 'fe-cashout-formula',
-        filename: 'index.ftl',
+        filename: isProd ? 'index.ftl' : 'index.html',
       }),
       new HtmlInlineScriptPlugin({
         htmlMatchPattern: [/index.html$/, /index.ftl$/],
