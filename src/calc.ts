@@ -71,7 +71,7 @@ function calc({
 
     // flexibet: bet.type = 4
     // one cut: featureTags && featureTags.includes(5)
-    if (betType === 4 || (featureTags && featureTags.includes(5)) || isUseGift) {
+    if (betType === 4 || (featureTags && featureTags.indexOf(5) > -1) || isUseGift) {
       return {
         isCashAble: false,
         isError: false,
