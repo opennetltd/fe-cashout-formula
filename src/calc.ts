@@ -21,10 +21,13 @@ type CashOutFactorSetting = unknown
 
 type Params = {
   bet: {
+    type: number,
     selections: Selection[],
     subBets: SubBet[],
     stake: number,
     originStake: number,
+    featureTags: number[],
+    isUseGift: boolean,
   };
   apiConfig: {
     isFeatureEnabled: boolean,
@@ -50,7 +53,7 @@ type CalcResponse = {
   availableStake: number
   execTime: number;
   message?: string;
-} | { isCashAble: boolean, isError: boolean, message: string, execTime: number }
+} | { isCashAble: boolean, isError: boolean, message?: string, execTime: number }
 
 function calcAvailableStake(subBets: SubBet[]) {
   return round(subBets.reduce((prev, subBet) => prev + subBet.stake, 0)) / 10000;
@@ -62,7 +65,19 @@ function calc({
 }: Params): CalcResponse {
   const execStartTime = new Date().getTime();
   try {
-    const { subBets, selections } = bet;
+    const {
+      subBets, selections, type: betType, featureTags, isUseGift,
+    } = bet;
+
+    // flexibet: bet.type = 4
+    // one cut: featureTags && featureTags.includes(5)
+    if (betType === 4 || (featureTags && featureTags.includes(5)) || isUseGift) {
+      return {
+        isCashAble: false,
+        isError: false,
+        execTime: new Date().getTime() - execStartTime,
+      };
+    }
     if (apiConfig.zeroMarginCashOutEnabled) {
       if (
         (bet.stake !== null && bet.originStake !== null && !(bet.stake !== bet.originStake))
